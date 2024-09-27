@@ -1,0 +1,434 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model BusinessUnit {
+  BusinessUnit        String   @id @db.VarChar(5) @unique
+  BName               String?  @db.VarChar(100)
+  BShortName          String?  @db.VarChar(20)
+  AddressLine1        String?  @db.VarChar(100)
+  AddressLine2        String?  @db.VarChar(100)
+  AddressLine3        String?  @db.VarChar(100)
+  CurrencyCode        String?  @db.Char(4)
+  IntraOrgnTBL        String?  @db.Char(1)
+  BUType              String?  @db.Char(1)
+  BBUType             String?  @db.Char(1)
+  SortOrder           Int?
+  BSortOrder          Int?
+  UserId              String?  @db.VarChar(5)
+  Datem               DateTime? @db.DateTime()
+  CreatedDate         DateTime? @db.DateTime()
+  EffStat             String?  @db.VarChar(1)
+  DefaultBank         String?  @db.VarChar(4)
+  IntraOrgn           String?  @db.VarChar(10)
+  IsPORelated         String?  @db.VarChar(1)
+  FromEmailAddr       String?  @db.VarChar(50) 
+  FromEmailAddrPwd    String?  @db.VarChar(50)
+  RegardsNote         String?  @db.VarChar(100)
+  FinanceInchargeEmailId String? @db.VarChar(50)
+  ReportingInchargeEmailId String? @db.VarChar(100)
+  PanNo               String?  @db.VarChar(50)
+  GSTIN               String?  @db.VarChar(20)
+  PlaceofSupply       String?  @db.VarChar(20)
+  DefaultInstitute    String   @db.VarChar(5) @default("MAHE")
+  Isgroup             String?  @db.VarChar(1)
+  InterOrgAccount     String?  @db.VarChar(10)
+  IsSelfApproval      String?  @db.VarChar(1)
+  OBPermitted         String?  @db.VarChar(1)
+  TANGROUP            String?  @db.VarChar(1)
+  TAN                 String?  @db.VarChar(50)
+  TANBU               String?  @db.VarChar(5)
+
+  // Users Table Relations
+  CreatedBy           Users?  @relation(name: "WhoCreated", fields: [UserId], references: [UserID]) // this adds the userID to BU Table from the User Master 
+  // UserIDByBU_M Table relations
+  UserIDByBU_M        UserIDByBU_M[] // relation if multiple Users require access
+
+  // VoucherMaster Relations
+  Voucher             Voucher[] // relation if there is multiple voucher for a business unit
+
+  // Vendor Relations
+  BU                  Vendor[] @relation(name: "whichBU")
+
+  // VoucherAccounting relation
+  Voucheracc          VoucherAccounting[]
+
+  //Added single user for user master relation
+  Users Users[]
+}
+
+model Users {
+	BusinessUnit String @db.VarChar(10)
+	UserID String @db.VarChar(5) @unique
+	Name String? @db.VarChar(50)
+	Role String? @db.VarChar(50)
+	EmailID String @unique @db.VarChar(20)
+	Status String? @db.VarChar(50)
+	DefModule String? @db.VarChar(1)
+	DefaultInstitute String? @db.VarChar(1)
+	Password String @db.VarChar(500) 
+
+	//UserIDByBU_M Relations
+	UserIDByBU_M UserIDByBU_M[]
+	//Business Unit Relation
+	CreatedBusinessUnits BusinessUnit[] @relation(name: "WhoCreated") //Sets relation so that Business Unit Table can access UserID
+	//Account Relations
+	CreatedAccount Account[] @relation(name: "WhoCreated")
+	//Vendor Relations
+	GiveUsertoVender Vendor[] @relation(name: "WhoCreated")
+	//Role relation
+	GetRole Role? @relation(fields: [Role], references: [Id])
+
+	//voucher details
+	VoucherUser Voucher[] @relation(name: "UserCreated")
+	VoucherApprovedBy Voucher[] @relation(name: "ApprovedBy")
+	VoucherEnteredBy Voucher[] @relation(name: "EnteredBy")
+
+	//VoucherAcc
+	Voucheracc VoucherAccounting[]
+
+	BU BusinessUnit? @relation(fields: [BusinessUnit], references: [BusinessUnit])
+
+	@@id([BusinessUnit, UserID])
+}
+
+model UserIDByBU_M {
+	UserID String @db.VarChar(5)
+	BusinessUnit String @db.VarChar(10)
+
+	BusinessUnitMaster BusinessUnit @relation(fields: [BusinessUnit], references: [BusinessUnit])
+	UserMaster Users @relation(fields: [BusinessUnit, UserID], references: [BusinessUnit, UserID])
+
+	@@id([UserID, BusinessUnit])
+}
+
+model Role {
+	Id String @db.VarChar(10) @id
+	RoleName String @db.VarChar(20)
+
+	User Users[]
+	Functionalities Functionalities[]
+}
+
+model AccountType {
+	Id String @db.VarChar(1) @id
+	Name String? @db.VarChar(20)
+
+	//Account Table Relations
+	accounts Account[]
+}
+
+model Account {
+	Account String @db.VarChar(10) @id
+	EffDT DateTime
+	ADesc String? @db.VarChar(50)
+	DescShort String? @db.VarChar(10)
+	EffStat String? @db.VarChar(1)
+	ActType String? @db.Char(1)
+	OpenItemC String? @db.Char(1)
+	SundryCreditC String? @db.Char(1)
+	CustC String? @db.Char(1)
+	UserID String? @db.VarChar(5) // user table?
+	DateM DateTime?
+	isAfflMandatory String? @db.Char(1)
+	isTDS String? @db.Char(1)
+	CreatedDate DateTime?
+	isOprUnit String? @db.VarChar(1)
+	isBudget String? @db.VarChar(1)
+	IsSSubledger String? @db.VarChar(1)
+	IsHSubledger String? @db.VarChar(1)
+	IsSFLledger String? @db.VarChar(1)
+	ISHFLledger String? @db.VarChar(1)
+	ISSDemLedger String? @db.VarChar(1)
+	IsHAffiliate String? @db.VarChar(1)
+	IsSAffiliate String? @db.VarChar(1)
+
+	GetActType AccountType? @relation(fields: [ActType], references: [Id])
+	//UserTable relation
+	WhoCreated Users? @relation(name: "WhoCreated", fields: [UserID], references: [UserID])
+
+	//Voucher acc
+	Voucheracc VoucherAccounting[]
+}
+
+model Vendor { //get user from UserIDByBU_M? but a user can enter 2 vendor details?
+	VendorID String @db.VarChar(10) @id
+	VendName String? @db.VarChar(160)
+	VendorType String? @db.Char(1)
+	PanNo String? @db.VarChar(50)
+	VTypeDesc String? @db.VarChar(20)
+	Company String? @db.Char(1)
+	VendorStatus String? @db.Char(1)
+	EffStat String? @db.VarChar(1)
+	UserID String? @db.VarChar(5) // referenced to User Master ? 
+	Datem DateTime
+	CreatedDate DateTime
+	VendorCategory String? @db.VarChar(4)
+	EmployeeCode String? @db.VarChar(15)
+	BU String? @db.VarChar(15) // is this business unit?
+	CreatedBy String? @db.VarChar(10)
+	VendorTaxClassification String? @db.VarChar(20)
+	PVendorID String? @db.VarChar(10)
+	NumberOfEntries Int?
+	VendorClass String? @db.VarChar(1)
+	BankDetailEditedBy String? @db.VarChar(5)
+	BankDetailsEditOn DateTime
+	BankDetailApprovedBy String? @db.VarChar(5)
+	BankDetailApprovedOn DateTime
+	NatureOfBusiness String? @db.VarChar(10)
+	Form16AEmail String? @db.VarChar(500)
+	BusinessCategory String? @db.VarChar(200)
+	Form16AUserID String? @db.VarChar(5)
+	Form16ADatem DateTime
+
+	VendorDetails VendorDetails?
+	Voucher Voucher[]
+
+	//user table relation
+	GetUserID Users? @relation(name: "WhoCreated",fields: [UserID], references: [UserID])
+	//BusinessUnit relation
+	GetBU BusinessUnit? @relation(name: "whichBU", fields: [BU], references: [BusinessUnit])
+
+	Voucheracc VoucherAccounting[]
+}
+
+model VendorDetails {
+	VendorID String @db.VarChar(10) @id
+	Entry_No Int?
+	VAddress1 String? @db.VarChar(100)
+	VAddress2 String? @db.VarChar(100)
+	VAddress3 String? @db.VarChar(100)
+	VCity String? @db.VarChar(50)
+	VState String? @db.VarChar(50)
+	VPinCode String? @db.VarChar(10)
+	VendorContact String? @db.VarChar(25)
+	LocalAddress String? @db.VarChar(500)
+	Fax String? @db.VarChar(30)
+	WebSiteURL String? @db.VarChar(100)
+	Email String? @db.VarChar(80)
+	VATSalesRegDetails String? @db.VarChar(100)
+	ServiceTaxRegNum String? @db.VarChar(20)
+	CSTRegNum String? @db.VarChar(20)
+	ESIRegNum String? @db.VarChar(20)
+	LabourContactRegNum String? @db.VarChar(20)
+	PFRegNum String? @db.VarChar(20)
+	AnyOtherDetails String? @db.VarChar(50)
+	BankName String? @db.VarChar(70)
+	BranchName String? @db.VarChar(70)
+	BankAddress String? @db.VarChar(100)
+	AccountNum String? @db.VarChar(70)
+	BeneficiaryName String? @db.VarChar(50)
+	IFSCCode String? @db.VarChar(70)
+	IsDocSubmitted String @db.Char(1)
+	GSTIN String? @db.VarChar(20)
+	StateCode String? @db.VarChar(20)
+	OldVendorId String? @db.VarChar(100)
+	AccountNumF String? @db.VarChar(50)
+	IFSCCodeF String? @db.VarChar(50)
+	VendorMobileNumber String? @db.VarChar(16)
+	IsInvoiceUploaded String? @db.VarChar(1)
+	GrpInsurance String? @db.VarChar(50)
+	GrpInsuranceExpDate DateTime? //date only
+	EletricContractLicNum String? @db.VarChar(50)
+	ElectricContractLicExpDate DateTime? //date only
+	SendMail String? @db.VarChar(1)
+	LabContractLicExpdate DateTime? //date only
+	Form16AEmail String? @db.VarChar(100)
+	PaymentNotificationEmail String? @db.VarChar(80)
+
+	VendorMaster Vendor @relation(fields: [VendorID], references: [VendorID])
+}
+
+model TreeNode {
+	ID String @db.VarChar(10) @id
+	DisplayName String @db.VarChar(20)
+	DisplayOrder Int
+
+	Functionalities Functionalities[]
+}
+
+model Functionalities {
+	ID String @db.VarChar(10) @id
+	DisplayName String? @db.VarChar(50)
+	URL String @db.VarChar(100)
+	FG String @db.VarChar(10)
+	TreeNode String @db.VarChar(10)
+	Type String @db.VarChar(1)
+	DisplayOrder Int
+	RoleID String? @db.VarChar(10)
+	Module String? @db.Char(10)
+
+	TreeNodeMaster TreeNode @relation(fields: [TreeNode], references: [ID])
+
+	GetRole Role? @relation(fields: [RoleID], references: [Id])
+}
+
+model Affiliate {
+	AffiliateBU String @db.VarChar(5) @id
+	AfBUName String @db.VarChar(76) @unique
+
+	Voucheracc VoucherAccounting[]
+}
+
+model Voucher {
+	BusinessUnit String @db.VarChar(5)
+	VoucherID String @db.VarChar(8) @unique 
+	VoucherStyle String? @db.VarChar(4)
+	InvoiceID String? @db.VarChar(50)
+	InvoiceDate DateTime? //date only
+	VendorID String? @db.VarChar(10) // reference vendor master table
+	VoucherSource String? @db.VarChar(4)
+	EntryStatus String? @db.Char(1)
+	AccountingDate DateTime? //date only
+	InvoiceAmount Decimal? @db.Decimal(10,2)
+	GrossAmount Decimal? @db.Decimal(10,2)
+	DueAmount Decimal? @db.Decimal(10,2)
+	LineNarration String? @db.VarChar(100)
+	LongNarration String? @db.VarChar(500)
+	CopiedToJournal String? @db.Char(1)
+	UserID String? @db.VarChar(5) // referenced to User Master ? 
+	Datem DateTime?
+	ApprovedBy String? @db.VarChar(5) // referenced to User Master ? 
+	ApprovedDate DateTime?
+	EnteredBy String? @db.VarChar(5) // referenced to User Master ? 
+	EnteredDate DateTime?
+	HoldAmount Decimal? @db.Decimal(10,2)
+	HoldReason String? @db.VarChar(100)
+	APRef String? @db.VarChar(8)
+	Payment_Count Int?
+	No_Of_VA_Entry Int?
+	Inward_No String? @db.VarChar(100)
+	hasTDS String? @db.Char(1)
+	IsTDSExp String? @db.Char(1)
+	ActivationDate DateTime?
+	IsPrinted String? @db.VarChar(1)
+	PaymentType String? @db.VarChar(30)
+	InvoiceStatus String @db.Char(1)
+	VoucherLink String @db.Char(2)
+	IsCheqno String? @db.VarChar(1)
+	OnlinePaytype String? @db.VarChar(1)
+	Ismis String? @db.VarChar(1)
+	Misamount Decimal? @db.Decimal(10,2)
+	InwardBU String? @db.VarChar(5)
+	VoucherType String? @db.VarChar(3)
+	VoucherReferenceID String? @db.VarChar(30)
+	InputTax String? @db.VarChar(1)
+	VendorTaxClassification String? @db.VarChar(20)
+	GSTIN String? @db.VarChar(20) // vendor gstin?
+	StateCode String? @db.VarChar(20)
+	IGST Float?
+	SGST Float?
+	CGST Float?
+	RCM String? @db.VarChar(1)
+	TaxComponent String? @db.VarChar(10)
+	TaxPercentage Float?
+	IsInwardRCM String? @db.VarChar(1)
+	RCMID String? @db.VarChar(10)
+	IsFinInvc String? @db.VarChar(1)
+	SelfInvRefenerence String? @db.VarChar(16)
+	Entry_no Int  // references Vendor Entry no? i don't think so
+	SC_Institute String? @db.VarChar(5)
+	IsReversed String? @db.VarChar(1)
+	HasAsset String? @db.VarChar(1)
+	IsPrepaid String? @db.VarChar(1)
+	DeferCap String? @db.VarChar(1)
+	ApprovalUnit String? @db.VarChar(5)
+	PrepaidID String? @db.VarChar(8)
+	isMisUploaded String? @db.VarChar(1)
+	Cess Float?
+	unposted String? @db.VarChar(1)
+	IsInvest String? @db.VarChar(1)
+	DeferInv String? @db.VarChar(1)
+	IsServiceCharge String? @db.VarChar(1)
+	EmailCategory String? @db.VarChar(5)
+	IsSubVendor String? @db.VarChar(1)
+	SubVendor String? @db.VarChar(10)
+	Goods_Services String? @db.VarChar(5)
+	Goods_ServicesAmount Decimal? @db.Decimal(10,2)
+	GSTR1unit String? @db.VarChar(5)
+	TdsLimit String? @db.VarChar(2)
+	ServiceAmount Decimal? @db.Decimal(10,2)
+	TAXSection String? @db.VarChar(20)
+	TCSAmount Float?
+	ServiceAmount2 Decimal? @db.Decimal(10,2)
+	TaxSection2 String? @db.VarChar(20)
+	TDSsection_morethanOne String? @db.VarChar(1)
+	Goodsamount Decimal? @db.Decimal(10,2)
+	Goodssection String? @db.VarChar(20)
+	TdsLimitGoods String? @db.VarChar(1)
+	VendorApplicability String? @db.VarChar(1)
+	VendEInvoiceEnabled String? @db.VarChar(1)
+	UnPostDate DateTime?
+	unpostreason String? @db.VarChar(100)
+	GRNSRNDate DateTime?
+	DueDate DateTime?
+
+	//BusinessUnit relations
+	BusinessUnitMaster BusinessUnit @relation(fields: [BusinessUnit], references: [BusinessUnit])
+	//VendorDetails
+	VendorMaster Vendor? @relation(fields: [VendorID], references: [VendorID])
+	//Users relation
+	GetUserID Users? @relation(name: "UserCreated",fields: [UserID], references: [UserID])
+	GetApprovedBy Users? @relation(name: "ApprovedBy", fields: [ApprovedBy], references: [UserID])
+	GetEnterBy Users? @relation(name: "EnteredBy", fields: [EnteredBy], references: [UserID])
+
+	//Voucheracc
+	Voucheracc VoucherAccounting[]
+	
+	
+	@@id([BusinessUnit, VoucherID])
+}
+
+model VoucherAccounting {
+	BusinessUnit String @db.VarChar(5)
+	VoucherID String @db.VarChar(8)
+	VoucherLine Int 
+	Account String? @db.VarChar(10)
+	ActivityCode String? @db.VarChar(4)
+	ActivityReference String? @db.VarChar(10)
+	DeptID String? @db.VarChar(10)
+	OprUnit String? @db.VarChar(10)
+	AffilateBU String? @db.VarChar(10) // reference affiliate table
+	SubledgerUnit String? @db.VarChar(10)
+	OpenItem String? @db.VarChar(11)
+	VendorID String? @db.VarChar(10) // reference Vendor table
+	LineNarration String? @db.VarChar(100)
+	DebitCredit String? @db.VarChar(1)
+	Amount Decimal? @db.Decimal(10,2)
+	CopiedToJournal String? @db.Char(1)
+	UserID String? @db.VarChar(5)
+	Datem DateTime?
+	TaxType String? @db.VarChar(3)
+	Entry_no Int?
+	CategoryID String? @db.VarChar(10)
+	entryType String? @db.VarChar(1)
+	AssetType String? @db.VarChar(1)
+	SubVendorID String? @db.VarChar(10)
+
+	//BusinessUnit relation
+	GetBU BusinessUnit @relation(fields: [BusinessUnit], references: [BusinessUnit])
+	//Voucher table relation
+	GetVoucherId Voucher @relation(fields: [VoucherID], references: [VoucherID])
+	//Account Table relation
+	GetAccount Account? @relation(fields: [Account], references: [Account])
+	//Affiliate Table relation
+	GetAffBU Affiliate? @relation(fields: [AffilateBU], references: [AfBUName])
+	//Vendor Table relation
+	GetVendorID Vendor? @relation(fields: [VendorID], references: [VendorID])
+	//Users Table relation
+	GetUserID Users? @relation(fields: [UserID], references: [UserID])
+
+	@@id([BusinessUnit, VoucherID, VoucherLine])
+
+}

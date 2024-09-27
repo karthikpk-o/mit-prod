@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/home/user/pk/mit/backend/logger/info/.7e53b2faf511b0622145adfce0c7cc53bdd0d858-audit.json",
+    "files": [
+        {
+            "date": 1727422530089,
+            "name": "/home/user/pk/mit/backend/logger/info/info-2024-09-27.log",
+            "hash": "7a5994d17ff17700ad7b5a397b38ad1a627730bd2e1195e9539fb511f0243376"
+        }
+    ],
+    "hashType": "sha256"
+}
