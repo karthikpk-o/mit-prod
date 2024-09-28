@@ -3,7 +3,7 @@ import { ChevronDown, ChevronUp, Eye } from "lucide-react"
 import NavBar from "../components/NavBar"
 import axios from "axios"
 
-export default function VoucherApproval() {
+export default function ViewVouchers() {
   const [vouchers, setVouchers] = useState([]);
   const [expandedVoucher, setExpandedVoucher] = useState(null)
   const [isApproving, setIsApproving] = useState(false)
@@ -27,36 +27,27 @@ export default function VoucherApproval() {
     fetchVouchers();
   }, [fetchVouchers]);
 
+  useEffect(()=>{
+    const fetchAccountingDetails = async ()=>{
+        try{
+            const response = await axios.get("http://localhost:3000/api/v1/user/voucheracc",
+            {
+                VoucherID: expandedVoucher.VoucherID
+            },
+            {
+                headers:{
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                }
+            });
+        }catch(error){
+            console.log(error.message);
+        }
+    }
+    fetchAccountingDetails();
+  }, [])
+
   const toggleVoucherDetails = (VoucherID) => {
     setExpandedVoucher(expandedVoucher === VoucherID ? null : VoucherID)
-  }
-
-  const approveVoucher = async (VoucherID) => {
-    setIsApproving(true)
-    try {
-      const approvalDate = new Date().toISOString();
-
-      const response = await axios.post("http://localhost:3000/api/v1/user/voucherapproval", 
-        {
-          VoucherID: VoucherID,
-          ApprovedDate: approvalDate,
-        },
-        {
-        headers:{
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        }
-      })
-      if (response.data.success) {
-        setToast({ type: 'success', message: response.data.message })
-        await fetchVouchers();
-      } else {
-        throw new Error(response.data.message)
-      }
-    } catch (error) {
-      setToast({ type: 'error', message: `Failed to approve voucher: ${error.message}` })
-    } finally {
-      setIsApproving(false)
-    }
   }
 
   useEffect(() => {
@@ -77,7 +68,7 @@ export default function VoucherApproval() {
     <div className="flex h-screen bg-gradient-to-br from-sky-100 to-indigo-100">
         <NavBar/>
         <main className="flex-1 overflow-y-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">Voucher Approval</h1>
+            <h1 className="text-2xl font-bold mb-4">View Vouchers</h1>
         <div className="overflow-x-auto mt-10">
             <table className="min-w-full bg-white">
             <thead className="bg-gray-100">
@@ -210,14 +201,23 @@ export default function VoucherApproval() {
                                 <DisplayField label="Voucher Link" value={voucher.VoucherLink} />
                                 </div>
                             </div>
+
+                            {/*Voucher Accounting*/}
+                            <div className="sm:col-span-1 bg-purple-100 p-4 rounded-lg">
+                                <h3 className="text-lg font-semibold text-black mb-4">Voucher Accounting</h3>
+                                <div className="grid gap-4 sm:grid-cols-3 sm:gap-6">
+                                <DisplayField label="Account Number" value={voucher} />
+                                <DisplayField label="Account Name" value={voucher.Datem} />
+                                <DisplayField label="Debit/Credit" value={voucher.EnteredBy} />
+                                <DisplayField label="Amount" value={voucher.ApprovedBy} />
+                                <DisplayField label="Account Number" value={voucher.ApprovedDate} />
+                                <DisplayField label="Account Name" value={voucher.Ismis} />
+                                <DisplayField label="Debit/Credit" value={voucher.isMisUploaded} />
+                                <DisplayField label="Amount" value={voucher.IsServiceCharge} />
+                                </div>
                             </div>
-                            <button
-                            className={`mt-4 px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${isApproving ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            onClick={() => approveVoucher(voucher.VoucherID)}
-                            disabled={isApproving}
-                            >
-                            {isApproving ? "Approving..." : "Approve Voucher"}
-                            </button>
+
+                            </div>
                         </div>
                         </td>
                     </tr>

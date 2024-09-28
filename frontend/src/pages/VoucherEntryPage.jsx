@@ -150,7 +150,7 @@ export default function VoucherEntryPage() {
       [name]: value
     }));
   };
-
+  
   const handleDateTimeChange = (e) => {
     const { name, value } = e.target;
     // Convert the datetime-local value to ISO 8601 format
@@ -160,7 +160,7 @@ export default function VoucherEntryPage() {
       [name]: isoDateTime
     }));
   };
-
+  
   //on search function for vendor details: gets them from backend
   const onSearch = async(e)=>{
     const { name, value } = e.target;
@@ -206,10 +206,9 @@ export default function VoucherEntryPage() {
         }
       );
       setToast({type: "success", message: response.data.message})
-      e.Default()
+      window.location.reload()
     } catch (error) {
       console.error('Error saving voucher:', error);
-      setToast({type: "error", message: `Failed to Enter voucher ${response.data.message}`})
     }
   };
 
@@ -334,7 +333,7 @@ export default function VoucherEntryPage() {
                 />
                 <TextArea id="Inward_No" label="Inward Invoice No:" rows={2}/>
                 <TextArea label="Inward Description:" rows={2}/>  {/*noprisma*/}
-                <InputField onChange={handleDateTimeChange} id="InvoiceDate" label="Invoice Date" type="datetime-local"
+                <InputField onChange={handleDateTimeChange} id="InvoiceDate" label="Invoice Date" type="date"
                 value={formData.InvoiceDate? formData.InvoiceDate.slice(0, 16): ""}/>
                 <InputField label="Non Inward Invoice No:"/> {/*noprisma*/}
               </div>
@@ -363,7 +362,7 @@ export default function VoucherEntryPage() {
             <div className="sm:col-span-5 bg-green-100 p-4 rounded-lg">
               <h3 className="text-lg font-semibold text-black mb-4">Financial Details</h3>
               <div className="grid gap-4 sm:grid-cols-5 sm:gap-6">
-                <InputField onChange={handleInputChange} id="AccountingDate" label="Accounting Date:" type='date'/>
+                <InputField onChange={handleDateTimeChange} id="AccountingDate" label="Accounting Date:" type='date'/>
                 <TextArea onChange={handleInputChange} id="LineNarration" label="Short Narration:"/>
                 <InputField label="Voucher Amount:" type='number'/>
                 <InputField label="Approval Status:"/> {/*read only element*/}
@@ -398,7 +397,7 @@ export default function VoucherEntryPage() {
               <h3 className="text-lg font-semibold text-black mb-4">Additional Information</h3>
               <div className="grid gap-4 sm:grid-cols-5 sm:gap-6">
                 <Label value={userid.CreatedBy} id="UserID" label="Created By:"/>
-                <InputField onChange={handleInputChange} id="Datem" label="Created Date:" type='date'/>
+                <InputField onChange={handleDateTimeChange} id="Datem" label="Created Date:" type='date'/>
                 <Label value={userid.EnteredBy} id="EnteredBy" label="Entered By:"/>
                 <InputField onChange={handleInputChange} id="ApprovedBy" label="Approved By:"/>
                 <InputField onChange={handleInputChange} id="ApprovedDate" label="Approved Date:" type='date'/>
