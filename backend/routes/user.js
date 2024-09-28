@@ -259,6 +259,7 @@ router.get("/accdetails", async(req, res)=>{
     res.status(500).json({
       message: "Account not found"
     })
+    logger.warn(`Account Number : ${req.query.Account} not found`)
   }
 });
 
@@ -267,10 +268,14 @@ router.get("/vouchers", async(req, res)=>{
   try{
     const vouchers = await prisma.voucher.findMany({
       where:{
-        ApprovedBy: "",
-        ApprovedDate: "",
+        ApprovedBy: null,
+        ApprovedDate: null,
       }
     })
+    if(vouchers){
+      res.json(vouchers)
+    }
+    logger.info(`Pending vouchers sent successfully`)
   }catch(error){
     res.status(500).json({
       message: "Vouchers not found"
@@ -280,17 +285,22 @@ router.get("/vouchers", async(req, res)=>{
 
 router.post("/voucherapproval", authMiddleware, async(req, res)=>{
   try{
+    const currentuser = req.user;
     const result = await prisma.voucher.update({
       where:{
         VoucherID: req.body.VoucherID
       },
       data: {
-        ApprovedBy: req.user.UserID,
+        ApprovedBy: currentuser.UserID,
         ApprovedDate: req.body.ApprovedDate,
       }
     })
+    if(result){
+      res.json({ success: true, message: `Voucher ${req.body.VoucherID} approved successfully` })
+    }
   }catch(error){
     res.status(500).json({
+      success: false,
       message: "Vouchers not found"
     })
   }

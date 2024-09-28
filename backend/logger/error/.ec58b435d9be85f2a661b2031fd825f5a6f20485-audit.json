@@ -9,6 +9,11 @@
             "date": 1727422530091,
             "name": "/home/user/pk/mit/backend/logger/error/error-2024-09-27.log",
             "hash": "0f6c7e2ab7e523725502c3a8f5db3427dc4774a360774cff9a875a04aa01eacc"
+        },
+        {
+            "date": 1727501840254,
+            "name": "/home/user/pk/mit/backend/logger/error/error-2024-09-28.log",
+            "hash": "f69c478b8df12d13047a25624e12c3935efe405a3dc57cda7ce1b39ab02a048d"
         }
     ],
     "hashType": "sha256"

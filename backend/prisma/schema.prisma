@@ -286,11 +286,11 @@ model Voucher {
 	VoucherID String @db.VarChar(8) @unique 
 	VoucherStyle String? @db.VarChar(4)
 	InvoiceID String? @db.VarChar(50)
-	InvoiceDate DateTime? //date only
+	InvoiceDate DateTime? @db.Date
 	VendorID String? @db.VarChar(10) // reference vendor master table
 	VoucherSource String? @db.VarChar(4)
 	EntryStatus String? @db.Char(1)
-	AccountingDate DateTime? //date only
+	AccountingDate DateTime? @db.Date
 	InvoiceAmount Decimal? @db.Decimal(10,2)
 	GrossAmount Decimal? @db.Decimal(10,2)
 	DueAmount Decimal? @db.Decimal(10,2)
@@ -300,7 +300,7 @@ model Voucher {
 	UserID String? @db.VarChar(5) // referenced to User Master ? 
 	Datem DateTime?
 	ApprovedBy String? @db.VarChar(5) // referenced to User Master ? 
-	ApprovedDate DateTime?
+	ApprovedDate DateTime? 
 	EnteredBy String? @db.VarChar(5) // referenced to User Master ? 
 	EnteredDate DateTime?
 	HoldAmount Decimal? @db.Decimal(10,2)
