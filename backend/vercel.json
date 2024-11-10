@@ -10,10 +10,6 @@
       {
         "src": "/api/v1/user/(.*)",
         "dest": "/backend/routes/user.js"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "/"
       }
     ]
   }
