@@ -11,7 +11,7 @@ export default function VoucherApproval() {
 
   const fetchVouchers = useCallback(async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/v1/user/vouchers', {
+      const response = await axios.get(`https://mit-prod-q12j.vercel.app/api/v1/user/vouchers`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         }
@@ -36,7 +36,7 @@ export default function VoucherApproval() {
     try {
       const approvalDate = new Date().toISOString();
 
-      const response = await axios.post("http://localhost:3000/api/v1/user/voucherapproval", 
+      const response = await axios.post(`https://mit-prod-q12j.vercel.app/api/v1/user/voucherapproval`, 
         {
           VoucherID: VoucherID,
           ApprovedDate: approvalDate,
