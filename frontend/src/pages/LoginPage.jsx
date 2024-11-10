@@ -40,7 +40,7 @@ export default function Component() {
       if(error.response && error.response.status === 411){
         alert(error.response.data.message);
       }else{
-        console.log("Error during signin: ", error)
+        console.error("Error during signin: ", error)
       }
     }
   } 
