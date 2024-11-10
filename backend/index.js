@@ -7,7 +7,7 @@ const PORT = 3000;
 const app = express();
 app.use(json())
 app.use(cors({
-    origin: ["http://localhost:5173"],
+    origin: ["https://mit-prod-fra3.vercel.app"],
     credentials: true
 }))
 app.use("/api/v1", RootRouter);
