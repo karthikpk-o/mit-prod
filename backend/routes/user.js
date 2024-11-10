@@ -7,8 +7,6 @@ const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET;
 const router = express.Router();
 
-router.use(morganMiddleware)
-
 //login call
 router.post("/login", async(req, res)=>{
   try{
