@@ -195,7 +195,6 @@ export default function VoucherEntryPage() {
       formData: formData,
       voucherData: voucherData,
     }
-    console.log(formData)
     try {
       const response = await axios.post('http://localhost:3000/api/v1/user/entry',
         combinedData,
