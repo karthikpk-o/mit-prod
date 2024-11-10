@@ -19,17 +19,14 @@ export default function Component() {
     };
   }, []);
 
+  axios.defaults.withCredentials = true;
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     try{
       const response = await axios.post(`https://mit-prod-q12j.vercel.app/api/v1/user/login`, {
         username,
         password
-      }, {
-        headers :{
-          "Content-Type": "application/json"
-        },
-        withCredentials: true
       });
 
       localStorage.setItem("token", response.data.token);

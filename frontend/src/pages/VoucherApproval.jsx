@@ -9,6 +9,8 @@ export default function VoucherApproval() {
   const [isApproving, setIsApproving] = useState(false)
   const [toast, setToast] = useState(null);
 
+  axios.defaults.withCredentials = true;
+
   const fetchVouchers = useCallback(async () => {
     try {
       const response = await axios.get(`https://mit-prod-q12j.vercel.app/api/v1/user/vouchers`, {

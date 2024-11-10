@@ -99,6 +99,7 @@ export default function VoucherEntryPage() {
       VoucherLine: 2
     }
   });
+  axios.defaults.withCredentials = true;
 
   // This function will be called by VoucherAccountingForm to update voucherData
   const updateVoucherData = (updatedData) => {
