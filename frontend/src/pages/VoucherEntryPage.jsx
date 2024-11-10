@@ -109,7 +109,7 @@ export default function VoucherEntryPage() {
   useEffect(() => {
     const fetchVoucherID = async () => {
       try {
-        const response = await axios.get(`https://mit-prod-q12j.vercel.app/api/v1/user/voucherid`, {
+        const response = await axios.get(`https://mit-prod.vercel.app/api/v1/user/voucherid`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`, 
           }
@@ -166,7 +166,7 @@ export default function VoucherEntryPage() {
   const onSearch = async(e)=>{
     const { name, value } = e.target;
     try{
-      const response = await axios.get(`https://mit-prod-q12j.vercel.app/api/v1/user/vendordetails`, value)
+      const response = await axios.get(`https://mit-prod.vercel.app/api/v1/user/vendordetails`, value)
       setStateCode(response.data.StateCode)
       setVendorTax(response.data.VendorTaxClassification)
       setGSTIN(response.data.GSTIN)
@@ -197,7 +197,7 @@ export default function VoucherEntryPage() {
       voucherData: voucherData,
     }
     try {
-      const response = await axios.post(`https://mit-prod-q12j.vercel.app/api/v1/user/entry`,
+      const response = await axios.post(`https://mit-prod.vercel.app/api/v1/user/entry`,
         combinedData,
         {
           headers: {

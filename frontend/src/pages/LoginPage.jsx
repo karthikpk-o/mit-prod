@@ -24,7 +24,7 @@ export default function Component() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try{
-      const response = await axios.post(`https://mit-prod-q12j.vercel.app/api/v1/user/login`, {
+      const response = await axios.post(`https://mit-prod.vercel.app/api/v1/user/login`, {
         username,
         password
       });
