@@ -3,13 +3,11 @@ import {PrismaClient} from "@prisma/client";
 import jwt from "jsonwebtoken"
 import config from "../config.js"
 import authMiddleware from '../middleware.js';
-import { logger, morganMiddleware } from '../logger/index.js';
 
 const prisma = new PrismaClient();
 const {JWT_SECRET} = config;
 const router = express.Router();
 
-router.use(morganMiddleware)
 
 //login call
 router.post("/login", async(req, res)=>{
@@ -25,7 +23,6 @@ router.post("/login", async(req, res)=>{
             UserID: user.UserID,
             Role: user.Role
         }, JWT_SECRET);
-        logger.info(`User ${user.UserID} logged in successfully`)
         res.json({
             Role: user.Role,
             token : token
@@ -35,10 +32,9 @@ router.post("/login", async(req, res)=>{
       res.status(411).json({
         message : "Entered UserID is not registered with the system"
       })
-      logger.warn(`Login failed for user ${req.body.username}`)
     }
   }catch(error){
-    logger.error(`Login error : ${error.message}`)
+    res.status(500).json({ error: 'Error logging in' });
   }
 })
 
@@ -70,7 +66,7 @@ router.get('/navbar', authMiddleware, async (req, res) => {
       });
       res.json(menuWithSubMenus);
     } catch (error) {
-      console.error('Error fetching navigation bar items', error);
+      //console.error('Error fetching navigation bar items', error);
       res.status(500).json({ error: 'Error fetching navigation bar items' });
     }
   });
@@ -201,7 +197,7 @@ router.post('/entry', authMiddleware, async(req,res)=>{
             message: "Voucher and accounting entered successfully"
         });
     } catch (error) {
-        console.error('Prisma error:', error);
+        //console.error('Prisma error:', error);
         res.status(500).json({
             message: "Error creating voucher",
             error: error.message
@@ -259,7 +255,6 @@ router.get("/accdetails", async(req, res)=>{
     res.status(500).json({
       message: "Account not found"
     })
-    logger.warn(`Account Number : ${req.query.Account} not found`)
   }
 });
 
@@ -275,7 +270,6 @@ router.get("/vouchers", async(req, res)=>{
     if(vouchers){
       res.json(vouchers)
     }
-    logger.info(`Pending vouchers sent successfully`)
   }catch(error){
     res.status(500).json({
       message: "Vouchers not found"
