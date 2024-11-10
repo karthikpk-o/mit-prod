@@ -1,30 +1,32 @@
-import config from "./config.js"
-import jwt from "jsonwebtoken"
+import { jwtVerify } from "jose";
 
-const {JWT_SECRET} = config; 
-
-const authMiddleware = (req, res, next)=>{
+const authMiddleware = async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
-    if(!authHeader || !authHeader.startsWith('Bearer')){
+    if (!authHeader || !authHeader.startsWith("Bearer")) {
         return res.status(403).json({});
     }
 
-    const token = authHeader.split(' ')[1];
+    const token = authHeader.split(" ")[1];
+    const JWT_SECRET = process.env.JWT_SECRET;
 
-    try{
-        const decoded = jwt.verify(token, JWT_SECRET);
+    try {
+        // Verify the token using `jose`
+        const { payload } = await jwtVerify(
+            token,
+            new TextEncoder().encode(JWT_SECRET)
+        );
 
-        if(decoded.UserID){
-            req.user = decoded;
-            next();
+        // Check if payload contains the expected UserID
+        if (payload.UserID) {
+            req.user = payload;
+            return next();
+        } else {
+            return res.status(403).json({});
         }
-    }catch(err){
+    } catch (err) {
         return res.status(403).json({});
     }
 };
-
-
-  
 
 export default authMiddleware;
