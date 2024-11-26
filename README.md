@@ -24,8 +24,6 @@ npm install
  ### In the frontend folder run
  `npm run dev`
 
-
-
  
 
 

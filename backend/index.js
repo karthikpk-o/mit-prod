@@ -6,7 +6,7 @@ const PORT = 3000;
 
 const app = express();
 app.use(cors({
-    origin: ["https://mit-prod-fra3.vercel.app"],
+    origin: "https://mit-prod-fra3.vercel.app",
     credentials: true
 }))
 app.use(json())

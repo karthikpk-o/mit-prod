@@ -25,6 +25,9 @@ export default function Component() {
     e.preventDefault()
     try{
       const response = await axios.post(`https://mit-prod.vercel.app/api/v1/user/login`, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        },
         username,
         password
       });
